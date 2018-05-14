@@ -255,8 +255,7 @@ public class HelloService {
     @Autowired
     RestTemplate restTemplate;
 
-
-    @HystrixCommand()
+ 
     public String hiService(String name) {
         //return restTemplate.getForObject("http://localhost:7071/hi?name="+name,String.class);
         return restTemplate.getForObject("http://service-hi/hi?name="+name,String.class);
@@ -460,5 +459,137 @@ public class HiController {
     
     
  **5)断路器（Hystrix）**
+ 
+ 在微服务架构中，根据业务来拆分成一个个的服务，服务与服务之间可以相互调用（RPC），在Spring Cloud可以用RestTemplate+Ribbon和Feign来调用。
+ 为了保证其高可用，单个服务通常会集群部署。由于网络原因或者自身的原因，服务并不能保证100%可用，如果单个服务出现问题，调用这个服务就会出现线程阻塞，
+ 此时若有大量的请求涌入，Servlet容器的线程资源会被消耗完毕，导致服务瘫痪。服务与服务之间的依赖性，故障会传播，会对整个微服务系统造成灾难性的严重后果，
+ 这就是服务故障的“雪崩”效应。
+ 
+ 为了解决这个问题，业界提出了断路器模型。
+ 
+ **5.1 在ribbon使用断路器**
+ 
+ 5.1.1 改造spring-cloud-service-ribbon 工程的代码，首先在pox.xml文件中加入spring-cloud-starter-hystrix的起步依赖:
+ 
+                <!-- 添加熔断器-->
+        		<dependency>
+        			<groupId>org.springframework.cloud</groupId>
+        			<artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+        		</dependency>
+ 
+ 
+ 5.1.2 在程序的启动类ServiceRibbonApplication 加@EnableHystrix注解开启Hystrix：
+ 
+ ```java
+@EnableDiscoveryClient
+@SpringBootApplication
+@EnableHystrix
+public class RibbonApplication {
+
+	@Bean
+	@LoadBalanced
+	RestTemplate restTemplate() {
+		return new RestTemplate();
+	}
+	public static void main(String[] args) {
+		SpringApplication.run(RibbonApplication.class, args);
+	}
+}
+
+```
+ 
+ 
+ 5.1.3 改造HelloService类，在hiService方法上加上@HystrixCommand注解。该注解对该方法创建了熔断器的功能，并指定了fallbackMethod熔断方法，
+ 熔断方法直接返回了一个字符串，字符串为”hi,”+name+”,sorry,error!”，代码如下：
+ 
+ 
+ ```java
+@Service
+public class HelloService {
+    @Autowired
+    RestTemplate restTemplate;
+
+
+    @HystrixCommand(fallbackMethod = "hiError")
+    public String hiService(String name) {
+        //return restTemplate.getForObject("http://localhost:7071/hi?name="+name,String.class);
+        return restTemplate.getForObject("http://service-hi/hi?name="+name,String.class);
+    }
+
+    public String hiError(String name) {
+        return "hi,"+name+",sorry,error!";
+    }
+}
+```
+ 
+ 至此，Robbin 添加熔断已完成，
+ 
+ 启动：service-ribbon 工程，当我们访问http://localhost:7075/hi?name=jojo,浏览器显示：
+ 
+    hi jojo,i am from port:7071
+ 
+ 此时关闭 service-hi 工程，当我们再访问http://localhost:7075/hi?name=jojo，浏览器会显示：
+ 
+    hi ,jojo,sorry,error!
+ 
+ 这就说明当 service-hi 工程不可用的时候，service-ribbon调用 service-a的API接口时，会执行快速失败，直接返回一组字符串，而不是等待响应超时，
+ 这很好的控制了容器的线程阻塞。
+ 
+
+ 
+ 
+ 
+ **5.2 Feign中使用断路器**
+ 
+ **5.2.1** Feign是自带断路器的， 它没有默认打开。需要在配置文件中配置打开它，在配置文件加以下代码：
+        
+    feign:
+       hystrix:
+         enabled: true
+ 
+ **5.2.2** 基于spring-cloud-feign工程进行改造，只需要在FeignClient的SchedualServiceHi接口的注解中加上fallback的指定类就行了：
+ 
+
+```java
+@FeignClient(value = "service-hi",fallback = SchedualServiceHiHystric.class)
+public interface SchedualServiceHi {
+    @RequestMapping(value = "/hi",method = RequestMethod.GET)
+    String sayHiFromClientOne(@RequestParam(value = "name") String name);
+}
+```
+
+**5.2.3** SchedualServiceHiHystric需要实现SchedualServiceHi 接口，并注入到Ioc容器中，代码如下：
+
+```java
+@Component
+public class SchedualServiceHiHystric implements SchedualServiceHi {
+    @Override
+    public String sayHiFromClientOne(String name) {
+        return "sorry "+name;
+    }
+}
+``` 
+  至此，Feign 添加熔断已完成，
+  
+  测试同上
+  
+  
+  
+  
+  
+  
+  
+  
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
  

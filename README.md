@@ -53,6 +53,13 @@
  通过eureka.client.registerWithEureka：false和fetchRegistry：false来表明自己是一个eureka server.
  
  
+ 
+ 
+ 
+ ----------------------------------华丽的分割线-----------------------------------------------------------------------------
+ 
+ 
+ 
  **2) 创建一个服务提供者 (eureka client)**
  
    module:spring-cloud-service-a

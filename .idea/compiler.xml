@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="spring-cloud-eureka-server" />
+        <module name="spring-cloud-feign" />
+        <module name="spring-cloud-ribbon-service" />
+        <module name="spring-cloud-serice-feign" />
+        <module name="spring-cloud-service-a" />
+        <module name="spring-cloud-service-ribbon" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="eureka-server" target="1.8" />
+      <module name="spring-cloud-eureka-server" target="1.8" />
+      <module name="spring-cloud-feign" target="1.8" />
+      <module name="spring-cloud-jojo" target="1.5" />
+      <module name="spring-cloud-microservice-consumer" target="1.8" />
+      <module name="spring-cloud-microservice-provider" target="1.8" />
+      <module name="spring-cloud-ribbon-service" target="1.8" />
+      <module name="spring-cloud-serice-feign" target="1.8" />
+      <module name="spring-cloud-service-a" target="1.8" />
+      <module name="spring-cloud-service-feign" target="1.8" />
+      <module name="spring-cloud-service-ribbon" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

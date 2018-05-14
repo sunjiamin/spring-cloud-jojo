@@ -1,0 +1,15 @@
+server:
+  port: 7071
+
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: http://localhost:7070/eureka/
+spring:
+  application:
+    # 需要指明spring.application.name,这个很重要，这在以后的服务与服务之间相互调用一般都是根据这个name
+    name: service-hi
+

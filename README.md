@@ -1,11 +1,11 @@
 
 **1）eureka 服务注册**
 
- module:spring-cloud-eureka-server
+    module:spring-cloud-eureka-server
  
  **1.1 添加Pom引用**
  
- 	<dependencies>
+ 	<dependencies> 
  		<dependency>
  			<groupId>org.springframework.boot</groupId>
  			<artifactId>spring-boot-starter-web</artifactId>
@@ -62,7 +62,7 @@
  
  **2) 创建一个服务提供者 (eureka client)**
  
-   module:spring-cloud-service-a
+    module:spring-cloud-service-a
    
    **2.1 创建项目**
    
@@ -151,6 +151,8 @@ eureka-server项目启动后，启动服务提供项目
  
  
  **3）服务消费者（rest+ribbon）**
+ 
+    module:spring-cloud-service-ribbon
  
  在微服务架构中，业务都会被拆分成一个独立的服务，服务与服务的通讯是基于http restful的。
  Spring cloud有两种服务调用方式，一种是ribbon+restTemplate，另一种是feign。在这一篇文章首先讲解下基于ribbon+rest。
@@ -298,9 +300,13 @@ public class HelloController {
  
  
  **此时的架构：**
+ 
  一个服务注册中心，eureka server,7070
+ 
  spring-cloud-service-a工程跑了两个实例，端口分别为7071,7072，分别向服务注册中心注册
+ 
  spring-cloud-sercvice-ribbon端口为7075,向服务注册中心注册
+ 
  当spring-cloud-sercvice-ribbon通过restTemplate调用service-hi的hi接口时，因为用ribbon进行了负载均衡，会轮流的调用service-hi：7071和7072 两个端口的hi接口；
  
  
@@ -312,11 +318,14 @@ public class HelloController {
  
  
  
- 4）服务消费者（Feign）
+ **4）服务消费者（Feign）**
+ 
+     module:spring-cloud-feigon
+ 
  
  上面，讲述了如何通过RestTemplate+Ribbon去消费服务，这里主要讲述如何通过Feign去消费服务。
  
- 4.1 Feign简介
+ **4.1 Feign简介**
  Feign是一个声明式的伪Http客户端，它使得写Http客户端变得更简单。使用Feign，只需要创建一个接口并注解。它具有可插拔的注解特性，
  可使用Feign 注解和JAX-RS注解。Feign支持可插拔的编码器和解码器。Feign默认集成了Ribbon，并和Eureka结合，默认实现了负载均衡的效果。
  
@@ -325,10 +334,10 @@ public class HelloController {
  Feign 采用的是基于接口的注解
  Feign 整合了ribbon
  
- 4.2 准备工作
+ **4.2 准备工作**
  继续用上一节的工程， 启动eureka-server，端口为7070; 启动service-a 两次，端口分别为7071 、7072.
  
- 4.3 创建一个feign的服务
+ **4.3 创建一个feign的服务**
  
  新建一个spring-boot工程，取名为spring-cloud-feign，pom文件依赖：
  
@@ -359,7 +368,7 @@ public class HelloController {
  
  
  
- 4.4 修改配置文件
+ **4.4 修改配置文件**
  
     server:
       port: 7076
@@ -377,7 +386,7 @@ public class HelloController {
         hostname: localhost
         
         
- 4.5 修改启动类
+ **4.5 修改启动类**
  
  在程序的启动类ServiceFeignApplication ，加上@EnableFeignClients注解开启Feign的功能：
  
@@ -394,7 +403,7 @@ public class SpringCloudFeignApplication {
 
 ```
  
- 4.6 定义接口
+ **4.6 定义接口**
  
  定义一个feign接口，通过@ FeignClient（“服务名”），来指定调用哪个服务。比如在代码中调用了service-hi服务的“/hi”接口，代码如下：
  
@@ -412,7 +421,7 @@ public interface SchedualServiceHi {
 }
 ```
  
- 4.7 添加Controller
+ **4.7 添加Controller**
  
  在Web层的controller层，对外暴露一个”/hi”的API接口，通过上面定义的Feign客户端SchedualServiceHi 来消费服务。代码如下
  
@@ -450,6 +459,6 @@ public class HiController {
     
     
     
- 5)断路器（Hystrix）
+ **5)断路器（Hystrix）**
  
  

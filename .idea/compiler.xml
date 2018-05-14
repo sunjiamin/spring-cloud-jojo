@@ -12,6 +12,7 @@
         <module name="spring-cloud-serice-feign" />
         <module name="spring-cloud-service-a" />
         <module name="spring-cloud-service-ribbon" />
+        <module name="spring-cloud-service-zuul" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -26,6 +27,7 @@
       <module name="spring-cloud-service-a" target="1.8" />
       <module name="spring-cloud-service-feign" target="1.8" />
       <module name="spring-cloud-service-ribbon" target="1.8" />
+      <module name="spring-cloud-service-zuul" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -48,5 +48,5 @@
  通过eureka.client.registerWithEureka：false和fetchRegistry：false来表明自己是一个eureka server.
  
  
- 
+
    

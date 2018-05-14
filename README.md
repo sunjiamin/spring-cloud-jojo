@@ -1,5 +1,5 @@
 
-**1）eureka 服务注册**
+**第一篇: eureka 服务注册**
 
     module:spring-cloud-eureka-server
  
@@ -60,7 +60,7 @@
  
  
  
- **2) 创建一个服务提供者 (eureka client)**
+ **第二篇: 创建一个服务提供者 (eureka client)**
  
     module:spring-cloud-service-a
    
@@ -150,7 +150,7 @@ eureka-server项目启动后，启动服务提供项目
  ----------------------------------华丽的分割线--------------------------------------------------------------------------
  
  
- **3）服务消费者（rest+ribbon）**
+ **第三篇:服务消费者（rest+ribbon）**
  
     module:spring-cloud-service-ribbon
  
@@ -317,7 +317,7 @@ public class HelloController {
  
  
  
- **4）服务消费者（Feign）**
+ *第四篇: 服务消费者（Feign）**
  
      module:spring-cloud-feigon
  
@@ -458,7 +458,7 @@ public class HiController {
     
     
     
- **5)断路器（Hystrix）**
+ **第五篇: 断路器（Hystrix）**
  
  在微服务架构中，根据业务来拆分成一个个的服务，服务与服务之间可以相互调用（RPC），在Spring Cloud可以用RestTemplate+Ribbon和Feign来调用。
  为了保证其高可用，单个服务通常会集群部署。由于网络原因或者自身的原因，服务并不能保证100%可用，如果单个服务出现问题，调用这个服务就会出现线程阻塞，
@@ -575,20 +575,193 @@ public class SchedualServiceHiHystric implements SchedualServiceHi {
   
   
   
+  ----------------------------------华丽的分割线--------------------------------------------------------------------------
   
   
+  **第六篇: 路由网关(zuul)**
+  
+        module:spring-cloud-service-zuul
+  
+  在Spring Cloud微服务系统中，一种常见的负载均衡方式是，客户端的请求首先经过负载均衡（zuul、Ngnix），再到达服务网关（zuul集群），
+  然后再到具体的服。，服务统一注册到高可用的服务注册中心集群，服务的所有的配置文件由配置服务管理，配置服务的配置文件放在git仓库，方便开发人员随时改配置。
   
   
+  6.1 Zuul简介
   
+  Zuul的主要功能是路由转发和过滤器。路由功能是微服务的一部分，比如／api/user转发到到user服务，/api/shop转发到到shop服务。zuul默认和Ribbon结合实现了负载均衡的功能。
   
+  zuul有以下功能：
+  
+      Authentication
+      Insights
+      Stress Testing
+      Canary Testing
+      Dynamic Routing
+      Service Migration
+      Load Shedding
+      Security
+      Static Response handling
+      Active/Active traffic management
+  
+  **6.2 准备工作**
+  
+  继续使用上一节的工程。在原有的工程上，创建一个新的工程。
+  
+  **6.3 创建spring-cloud-service-zuul工程**
+  
+  POM 引用：
+  
+        	<dependencies>
+        		<dependency>
+        			<groupId>org.springframework.boot</groupId>
+        			<artifactId>spring-boot-starter-web</artifactId>
+        		</dependency>
+        		<dependency>
+        			<groupId>org.springframework.cloud</groupId>
+        			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        		</dependency>
+        		<dependency>
+        			<groupId>org.springframework.cloud</groupId>
+        			<artifactId>spring-cloud-starter-netflix-zuul</artifactId>
+        		</dependency>
+        
+        		<dependency>
+        			<groupId>org.springframework.boot</groupId>
+        			<artifactId>spring-boot-starter-test</artifactId>
+        			<scope>test</scope>
+        		</dependency>
+        	</dependencies>
+        	
+  
+  **6.4 修改启动类**
+  
+  在其入口applicaton类加上注解@EnableZuulProxy，开启zuul的功能：
+  
+
+  ```java
+/**
+ * @author sunjiamin
+ */
+@SpringBootApplication
+@EnableZuulProxy
+@EnableEurekaClient
+public class SpringCloudServiceZuulApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringCloudServiceZuulApplication.class, args);
+	}
+}
+```
+  
+  **6.5 修改配置文件**
+  
+   加上配置文件application.yml加上以下的配置代码：
+   
+    eureka:
+      client:
+        serviceUrl:
+          defaultZone: http://localhost:7070/eureka/
+    server:
+      port: 7077
+    spring:
+      application:
+        name: service-zuul
+    zuul:
+      routes:
+        api-a:
+          path: /api-a/**
+          #以/api-a/ 开头的请求都转发给service-ribbon服务；
+          serviceId: service-ribbon
+        api-b:
+          path: /api-b/**
+          #以/api-b/开头的请求都转发给service-feign服务；
+          serviceId: service-feign
+  
+  依次运行这五个工程;打开浏览器访问：http://localhost:7077/api-a/hi?name=jojo ;浏览器显示：
+ 
+    hi jojo,i am from port:7072
+ 
+  打开浏览器访问：http://localhost:7077/api-b/hi?name=jojo ;浏览器显示：
+  
+    hi jojo,i am from port:7072
  
  
+  **6.6 服务过滤**
+  
+  zuul不仅只是路由，并且还能过滤，做一些安全验证。继续改造工程；添加MyFilter 继承自ZuulFilter：
+  
+  ```java
+package com.sun.jojo.servicezuul.config;
+
+import com.netflix.zuul.ZuulFilter;
+import com.netflix.zuul.context.RequestContext;
+import com.netflix.zuul.exception.ZuulException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+
+import javax.servlet.http.HttpServletRequest;
+
+/**
+ * description:
+ *
+ * @author sunjiamin
+ * @date 2018-05-14 15:24
+ */
+@Component
+public class MyFilter  extends ZuulFilter{
+
+    private static Logger log = LoggerFactory.getLogger(MyFilter.class);
+
+    @Override
+    public String filterType() {
+        return "pre";
+    }
+
+    @Override
+    public int filterOrder() {
+        return 0;
+    }
+
+    @Override
+    public boolean shouldFilter() {
+        return true;
+    }
+
+    @Override
+    public Object run() throws ZuulException {
+
+        RequestContext ctx = RequestContext.getCurrentContext();
+        HttpServletRequest request = ctx.getRequest();
+        log.info(String.format("%s >>> %s", request.getMethod(), request.getRequestURL().toString()));
+        Object accessToken = request.getParameter("token");
+        if(accessToken == null) {
+            log.warn("token is empty");
+            ctx.setSendZuulResponse(false);
+            ctx.setResponseStatusCode(401);
+            try {
+                ctx.getResponse().getWriter().write("token is empty");
+            }catch (Exception e){}
+
+            return null;
+        }
+        log.info("ok");
+        return null;
+    }
+}
+
+```
+  
+ 这时访问：http://localhost:7077/api-a/hi?name=jojo ；网页显示：
  
+    token is empty
  
+ 访问 http://localhost:7077/api-a/hi?name=jojo&token=22 ； 
+ 网页显示：
  
- 
- 
- 
+    hi joj0,i am from port:7072
+
  
  
  

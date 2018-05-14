@@ -10,6 +10,7 @@
         <option value="$PROJECT_DIR$/spring-cloud-serice-feign/pom.xml" />
         <option value="$PROJECT_DIR$/spring-cloud-service-ribbon/pom.xml" />
         <option value="$PROJECT_DIR$/spring-cloud-feign/pom.xml" />
+        <option value="$PROJECT_DIR$/spring-cloud-service-zuul/pom.xml" />
       </list>
     </option>
   </component>

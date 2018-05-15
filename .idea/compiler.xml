@@ -6,6 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="spring-cloud-config-client" />
+        <module name="spring-cloud-config-server" />
         <module name="spring-cloud-eureka-server" />
         <module name="spring-cloud-feign" />
         <module name="spring-cloud-ribbon-service" />
@@ -17,6 +19,8 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="eureka-server" target="1.8" />
+      <module name="spring-cloud-config-client" target="1.8" />
+      <module name="spring-cloud-config-server" target="1.8" />
       <module name="spring-cloud-eureka-server" target="1.8" />
       <module name="spring-cloud-feign" target="1.8" />
       <module name="spring-cloud-jojo" target="1.5" />

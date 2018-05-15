@@ -785,6 +785,241 @@ public class SpringCloudServiceZuulApplication {
     hi joj0,i am from port:7072
 
  
+ ----------------------------------华丽的分割线--------------------------------------------------------------------------
+   
+   
+ 
+ **第七篇：高可用分布式配置中心(Spring Cloud Config)**
+ 
+ **7.1 简介**
+ 
+ 在分布式系统中，由于服务数量巨多，为了方便服务配置文件统一管理，实时更新，所以需要分布式配置中心组件。在Spring Cloud中，
+ 有分布式配置中心组件spring cloud config ，它支持配置服务放在配置服务的内存中（即本地），也支持放在远程Git仓库中。在spring cloud config 
+ 组件中，分两个角色，一是config server，二是config client。
+ 
+ **7.2 新建spring-cloud-config-server** 
+  
+   pom文件：
+   
+    	<dependencies>
+    		<dependency>
+    			<groupId>org.springframework.cloud</groupId>
+    			<artifactId>spring-cloud-config-server</artifactId>
+    		</dependency>
+    		<dependency>
+    			<groupId>org.springframework.cloud</groupId>
+    			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+    		</dependency>
+    		<dependency>
+    			<groupId>org.springframework.cloud</groupId>
+    			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+    		</dependency>
+    
+    		<dependency>
+    			<groupId>org.springframework.boot</groupId>
+    			<artifactId>spring-boot-starter-test</artifactId>
+    			<scope>test</scope>
+    		</dependency>
+    	</dependencies>
+    	
+    	
+ **7.3 修改启动类**
+ 
+ 在程序的入口Application类加上@EnableConfigServer注解开启配置服务器的功能,
+ @EnableEurekaClient 开启注册功能，将配置作为一个服务注册到注册中心
+ 
+ ```java
+/**
+ * @author sunjiamin
+ */
+@SpringBootApplication
+@EnableConfigServer
+@EnableEurekaClient
+public class SpringCloudConfigServerApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringCloudConfigServerApplication.class, args);
+	}
+}
+```
+
+7.4 修改配置中心
+
+        spring.application.name=config-server
+        server.port=7078
+        
+        #指定服务注册地址
+        eureka.client.service-url.defaultZone = http://localhost:7070/eureka/
+        eureka.instance.hostname = localhost
+        
+        #配置git仓库地址
+        spring.cloud.config.server.git.uri=https://github.com/sunjiamin/SpringcloudConfig/ 
+        #配置仓库路径
+        spring.cloud.config.server.git.searchPaths=respo
+        #配置仓库的分支
+        spring.cloud.config.label=master
+        
+        #如果Git仓库为公开仓库，可以不填写用户名和密码，如果是私有仓库需要填写
+        #访问git仓库的用户名
+        #spring.cloud.config.server.git.username=your username
+        #访问git仓库的用户密码
+        #spring.cloud.config.server.git.password=your password
+        
+        
+   访问 http://localhost:7078/config-client-dev.properties ，得到结果：
+    
+            democonfigclient.message: hello spring io
+            foo: foo version 2
+            
+   
+   证明配置服务中心可以从远程程序获取配置信息。
+   http请求地址和资源文件映射如下:
+       
+       /{application}/{profile}[/{label}]
+       /{application}-{profile}.yml
+       /{label}/{application}-{profile}.yml
+       /{application}-{profile}.properties
+       /{label}/{application}-{profile}.properties  
  
  
  
+ **7.5 构建一个config client** 
+ 
+  新建项目： spring-cloud-config-client
+  
+  pom文件：
+  
+        	<dependencies>
+        		<dependency>
+        			<groupId>org.springframework.boot</groupId>
+        			<artifactId>spring-boot-starter-web</artifactId>
+        		</dependency>
+        		<dependency>
+        			<groupId>org.springframework.cloud</groupId>
+        			<artifactId>spring-cloud-starter-config</artifactId>
+        		</dependency>
+        		<dependency>
+        			<groupId>org.springframework.cloud</groupId>
+        			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        		</dependency>
+                <!--<dependency>-->
+                    <!--<groupId>org.springframework.cloud</groupId>-->
+                    <!--<artifactId>spring-cloud-starter-bus-amqp</artifactId>-->
+                <!--</dependency>-->
+        
+                <!--<dependency>-->
+                    <!--<groupId>org.springframework.cloud</groupId>-->
+                    <!--<artifactId>spring-cloud-starter-bus-kafka</artifactId>-->
+                <!--</dependency>-->
+        
+        		<dependency>
+        			<groupId>org.springframework.boot</groupId>
+        			<artifactId>spring-boot-starter-test</artifactId>
+        			<scope>test</scope>
+        		</dependency>
+        	</dependencies>
+        	
+        	
+        	
+  **7.6 配置文件bootstrap.properties**
+  
+  注意 这里是  bootstrap.properties 文件，不是application.properties .bootstrap.properties文件是系统级配置，
+  加载时间比application.properties早
+  
+    spring.application.name=config-client
+    #指明远程仓库的分支
+    spring.cloud.config.label=master
+    spring.cloud.config.profile=dev
+    #指明配置服务中心的网址
+    #spring.cloud.config.uri= http://localhost:7078/
+    server.port=7079
+    
+    #指定服务注册地址
+    eureka.client.service-url.defaultZone = http://localhost:7070/eureka/
+    eureka.instance.hostname = localhost
+    
+    #从配置中心读取文
+    spring.cloud.config.discovery.enabled=true
+    #配置中心的servieId，即服务名
+    spring.cloud.config.discovery.serviceId=config-server
+    
+  #spring.cloud.config.uri= http://localhost:7078/ 
+  这里是注释掉的，如果不是服务注册模式，单机情况下，可直接使用这个就可以，不需要配置 spring.cloud.config.discovery.serviceId=config-server
+  在读取配置文件不再写ip地址，而是服务名，这时如果配置服务部署多份，通过负载均衡，从而高可用。
+  
+  **7.7 修改启动类**
+  
+  @EnableEurekaClient 开启服务注册功能。
+  
+  ```java
+/**
+ * @author sunjiamin
+ */
+@SpringBootApplication
+@EnableEurekaClient
+public class SpringCloudConfigClientApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringCloudConfigClientApplication.class, args);
+	}
+}
+
+```
+  
+  **7.8 新建controller 访问**
+  
+  ```java
+/**
+ * description:
+ *
+ * @author sunjiamin
+ * @date 2018-05-15 09:52
+ */
+@RestController
+public class HiController {
+    /**
+     * 从配置中心获取配置信息
+     */
+    @Value("${foo}")
+    String foo;
+
+    @RequestMapping(value = "/hi")
+    public String hi(){
+        return foo;
+    }
+
+}
+```
+  
+  
+  浏览器 访问 http://127.0.0.1:7079/hi
+  
+    foo version 2
+  
+  
+  
+  这就说明，config-client从config-server获取了foo的属性，而config-server是从git仓库读取的,
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

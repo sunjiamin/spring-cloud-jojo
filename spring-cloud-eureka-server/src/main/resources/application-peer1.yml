@@ -1,0 +1,15 @@
+server:
+  port: 7070
+
+#spring:
+#  profiles: peer1
+
+eureka:
+  instance:
+    hostname: peer1
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://peer2:7069/eureka/
+

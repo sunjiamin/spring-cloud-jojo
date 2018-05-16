@@ -5,6 +5,8 @@ spring:
   application:
     name: service-ribbon
 
+  zipkin:
+    base-url: http://localhost:7082
 
 eureka:
   client:

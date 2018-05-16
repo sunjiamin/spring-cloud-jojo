@@ -10,4 +10,8 @@ spring:
     name: service-hi
   profiles:
     active: dev
+  zipkin:
+    base-url: http://localhost:7082
+
+
 

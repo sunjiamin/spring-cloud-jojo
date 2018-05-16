@@ -8,8 +8,10 @@
       <module fileurl="file://$PROJECT_DIR$/spring-cloud-feign/spring-cloud-feign.iml" filepath="$PROJECT_DIR$/spring-cloud-feign/spring-cloud-feign.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-cloud-jojo.iml" filepath="$PROJECT_DIR$/spring-cloud-jojo.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-cloud-service-a/spring-cloud-service-a.iml" filepath="$PROJECT_DIR$/spring-cloud-service-a/spring-cloud-service-a.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-cloud-service-b/spring-cloud-service-b.iml" filepath="$PROJECT_DIR$/spring-cloud-service-b/spring-cloud-service-b.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-cloud-service-ribbon/spring-cloud-service-ribbon.iml" filepath="$PROJECT_DIR$/spring-cloud-service-ribbon/spring-cloud-service-ribbon.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-cloud-service-zuul/spring-cloud-service-zuul.iml" filepath="$PROJECT_DIR$/spring-cloud-service-zuul/spring-cloud-service-zuul.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-cloud-zipkin-server/spring-cloud-zipkin-server.iml" filepath="$PROJECT_DIR$/spring-cloud-zipkin-server/spring-cloud-zipkin-server.iml" />
     </modules>
   </component>
 </project>

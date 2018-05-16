@@ -6,6 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="spring-cloud-bus" />
         <module name="spring-cloud-config-client" />
         <module name="spring-cloud-config-server" />
         <module name="spring-cloud-eureka-server" />
@@ -13,12 +14,15 @@
         <module name="spring-cloud-ribbon-service" />
         <module name="spring-cloud-serice-feign" />
         <module name="spring-cloud-service-a" />
+        <module name="spring-cloud-service-b" />
         <module name="spring-cloud-service-ribbon" />
         <module name="spring-cloud-service-zuul" />
+        <module name="spring-cloud-zipkin-server" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="eureka-server" target="1.8" />
+      <module name="spring-cloud-bus" target="1.8" />
       <module name="spring-cloud-config-client" target="1.8" />
       <module name="spring-cloud-config-server" target="1.8" />
       <module name="spring-cloud-eureka-server" target="1.8" />
@@ -29,9 +33,11 @@
       <module name="spring-cloud-ribbon-service" target="1.8" />
       <module name="spring-cloud-serice-feign" target="1.8" />
       <module name="spring-cloud-service-a" target="1.8" />
+      <module name="spring-cloud-service-b" target="1.8" />
       <module name="spring-cloud-service-feign" target="1.8" />
       <module name="spring-cloud-service-ribbon" target="1.8" />
       <module name="spring-cloud-service-zuul" target="1.8" />
+      <module name="spring-cloud-zipkin-server" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

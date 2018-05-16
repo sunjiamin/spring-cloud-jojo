@@ -34,9 +34,14 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>org.springframework.cloud</groupId>-->
+			<!--<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>-->
+		<!--</dependency>-->
+
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+			<artifactId>spring-cloud-starter-zipkin</artifactId>
 		</dependency>
 
 		<dependency>
@@ -67,24 +72,24 @@
 		</plugins>
 	</build>
 
-	<!--<repositories>-->
-		<!--<repository>-->
-			<!--<id>spring-snapshots</id>-->
-			<!--<name>Spring Snapshots</name>-->
-			<!--<url>https://repo.spring.io/snapshot</url>-->
-			<!--<snapshots>-->
-				<!--<enabled>true</enabled>-->
-			<!--</snapshots>-->
-		<!--</repository>-->
-		<!--<repository>-->
-			<!--<id>spring-milestones</id>-->
-			<!--<name>Spring Milestones</name>-->
-			<!--<url>https://repo.spring.io/milestone</url>-->
-			<!--<snapshots>-->
-				<!--<enabled>false</enabled>-->
-			<!--</snapshots>-->
-		<!--</repository>-->
-	<!--</repositories>-->
+	<repositories>
+		<repository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 
 </project>

@@ -7,6 +7,14 @@ server:
 spring:
   application:
     name: service-zuul
+
+  zipkin:
+    base-url: http://localhost:7082
+
+  sleuth:
+    sampler:
+      percentage: 1.0
+
 zuul:
   routes:
     api-a:
@@ -17,3 +25,13 @@ zuul:
       path: /api-b/**
       #以/api-b/开头的请求都转发给service-feign服务；
       serviceId: service-feign
+
+
+
+
+#spring:
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
+#    username: guest
+#    password: guest

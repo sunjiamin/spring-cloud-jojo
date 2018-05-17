@@ -5,6 +5,12 @@ spring:
   application:
     name: service-feign
 
+  zipkin:
+    base-url: http://localhost:7082
+
+  sleuth:
+    sampler:
+      percentage: 1.0
 
 eureka:
   client:

@@ -8,9 +8,21 @@ spring:
   zipkin:
     base-url: http://localhost:7082
 
+  sleuth:
+      sampler:
+        percentage: 1.0
+
 eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:7070/eureka/
   instance:
     hostname: localhost
+
+#
+#spring:
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
+#    username: guest
+#    password: guest

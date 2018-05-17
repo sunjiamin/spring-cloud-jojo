@@ -1,0 +1,12 @@
+server:
+  port: 7070
+
+
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+#  client:
+#    register-with-eureka: false
+#    fetch-registry: false
+
+
